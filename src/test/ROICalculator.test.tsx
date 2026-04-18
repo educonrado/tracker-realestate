@@ -21,9 +21,11 @@ function mockFinanzas(data: Record<string, unknown> | null) {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue({ data, error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
     order: vi.fn().mockResolvedValue({ data: [], error: null }),
-    insert: vi.fn(),
-    upsert: vi.fn(),
+    insert: vi.fn().mockResolvedValue({ error: null }),
+    upsert: vi.fn().mockResolvedValue({ error: null }),
+    update: vi.fn().mockReturnThis(),
   } as any);
 }
 
@@ -135,7 +137,7 @@ describe('ROICalculator', () => {
     fireEvent.change(pujaSlider, { target: { value: '100000' } });
 
     await waitFor(() => {
-      const roiDespuesEl = screen.getByText(/R\.O\.I\./i).closest('div')?.parentElement;
+      const roiDespuesEl = screen.getByText(/R\.O\.I\./i).closest('div');
       const roiDespues = roiDespuesEl?.querySelector('p:last-child')?.textContent;
       expect(roiDespues).not.toBe(roiAntes);
     });

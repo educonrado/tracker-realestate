@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [remates, setRemates] = useState<RemateWithFinanzas[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'list' | 'map'>('list');
+  const [tab, setTab] = useState<'vigentes' | 'archivados'>('vigentes');
 
   useEffect(() => {
     async function fetchRemates() {
@@ -61,6 +62,16 @@ export default function Dashboard() {
     return null;
   };
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const filteredRemates = remates.filter(r => {
+    const rDate = new Date(r.fecha_remate);
+    rDate.setHours(0, 0, 0, 0);
+    const isVigente = rDate >= today;
+    return tab === 'vigentes' ? isVigente : !isVigente;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -68,34 +79,54 @@ export default function Dashboard() {
         <div className="flex bg-slate-800 p-1 rounded-xl">
           <button 
             onClick={() => setView('list')}
-            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-indigo-600 shadow-md' : 'text-slate-400 hover:text-white'}`}
+            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-indigo-600 shadow-md text-white' : 'text-slate-400 hover:text-white'}`}
           >
             <ListIcon size={20} />
           </button>
           <button 
             onClick={() => setView('map')}
-            className={`p-2 rounded-lg transition-all ${view === 'map' ? 'bg-indigo-600 shadow-md' : 'text-slate-400 hover:text-white'}`}
+            className={`p-2 rounded-lg transition-all ${view === 'map' ? 'bg-indigo-600 shadow-md text-white' : 'text-slate-400 hover:text-white'}`}
           >
             <MapIcon size={20} />
           </button>
         </div>
       </div>
 
+      <div className="flex space-x-2 border-b border-slate-700/50 mb-4 pb-2">
+        <button
+          onClick={() => setTab('vigentes')}
+          className={`px-4 py-2 text-sm font-semibold transition-all border-b-2 ${tab === 'vigentes' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+        >
+          Vigentes
+        </button>
+        <button
+          onClick={() => setTab('archivados')}
+          className={`px-4 py-2 text-sm font-semibold transition-all border-b-2 ${tab === 'archivados' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+        >
+          Archivo / Histórico
+        </button>
+      </div>
+
       {loading ? (
         <div className="flex justify-center p-10">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
-      ) : remates.length === 0 ? (
+      ) : filteredRemates.length === 0 ? (
         <div className="card text-center py-10">
-          <p className="text-slate-400">No hay remates activos en este momento.</p>
+          <p className="text-slate-400">No hay remates {tab === 'vigentes' ? 'activos' : 'en el archivo'} en este momento.</p>
         </div>
       ) : view === 'list' ? (
         <div className="grid gap-4 sm:grid-cols-2">
-          {remates.map((remate) => {
+          {filteredRemates.map((remate) => {
             const semaforo = getSemaforoInfo(remate);
             const finanza = remate.remates_finanzas?.[0];
             return (
-              <Link to={`/roi/${remate.id_proceso}`} key={remate.id_proceso} className="card hover:border-indigo-500/50 transition-all flex flex-col group relative overflow-hidden block">
+              <Link to={`/roi/${remate.id_proceso}`} key={remate.id_proceso} className={`card transition-all flex flex-col group relative overflow-hidden block ${tab === 'archivados' ? 'opacity-60 grayscale-[50%] hover:grayscale-0 hover:opacity-100' : 'hover:border-indigo-500/50'}`}>
+                {tab === 'archivados' && (
+                  <div className="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] font-bold px-2 py-1 uppercase rounded-bl-lg z-10">
+                    Finalizado
+                  </div>
+                )}
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-bold text-lg text-white mb-1 truncate">{remate.tipo_bien} en {remate.canton}</h3>
@@ -134,7 +165,7 @@ export default function Dashboard() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {remates.map((remate) => {
+            {filteredRemates.map((remate) => {
               const coords = parseCoords(remate.coordenadas);
               if (!coords) return null;
               const semaforo = getSemaforoInfo(remate);

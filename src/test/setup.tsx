@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, beforeAll, afterAll } from 'vitest';
 
 // ─── Mock Supabase ────────────────────────────────────────────────────────────
 vi.mock('../lib/supabaseClient', () => {
@@ -17,6 +17,7 @@ vi.mock('../lib/supabaseClient', () => {
       upsert: vi.fn().mockResolvedValue({ error: null }),
       eq: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: null, error: null }),
+      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
     }),
     storage: mockStorage,
@@ -34,7 +35,7 @@ vi.mock('react-leaflet', () => ({
 }));
 
 // ─── Mock navigator.geolocation ───────────────────────────────────────────────
-Object.defineProperty(global.navigator, 'geolocation', {
+Object.defineProperty(globalThis.navigator, 'geolocation', {
   value: {
     getCurrentPosition: vi.fn(),
   },

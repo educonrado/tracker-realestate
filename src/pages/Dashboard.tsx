@@ -9,7 +9,7 @@ type RemateActivo = Database['public']['Tables']['remates_activos']['Row'];
 type RemateFinanzas = Database['public']['Tables']['remates_finanzas']['Row'];
 
 type RemateWithFinanzas = RemateActivo & {
-  remates_finanzas: RemateFinanzas[];
+  remates_finanzas: RemateFinanzas | RemateFinanzas[] | null;
 };
 
 export default function Dashboard() {
@@ -40,7 +40,10 @@ export default function Dashboard() {
   }, []);
 
   const getSemaforoInfo = (remate: RemateWithFinanzas) => {
-    const finanza = remate.remates_finanzas?.[0];
+    const finanza = Array.isArray(remate.remates_finanzas) 
+      ? remate.remates_finanzas[0] 
+      : remate.remates_finanzas;
+    
     if (!finanza || !finanza.valor_base || !finanza.avaluo_pericial) {
       return { color: 'bg-slate-600', text: 'N/A', ratio: null };
     }
@@ -119,7 +122,9 @@ export default function Dashboard() {
         <div className="grid gap-4 sm:grid-cols-2">
           {filteredRemates.map((remate) => {
             const semaforo = getSemaforoInfo(remate);
-            const finanza = remate.remates_finanzas?.[0];
+            const finanza = Array.isArray(remate.remates_finanzas) 
+              ? remate.remates_finanzas[0] 
+              : remate.remates_finanzas;
             return (
               <Link to={`/roi/${remate.id_proceso}`} key={remate.id_proceso} className={`card transition-all flex flex-col group relative overflow-hidden block ${tab === 'archivados' ? 'opacity-60 grayscale-[50%] hover:grayscale-0 hover:opacity-100' : 'hover:border-indigo-500/50'}`}>
                 {tab === 'archivados' && (

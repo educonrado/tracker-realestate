@@ -1,0 +1,46 @@
+[
+  {
+    "id_proceso": "17203-2023-08899",
+    "fecha_remate": "2026-07-20",
+    "provincia": "Pichincha",
+    "canton": "Quito",
+    "sector": "Ponceano",
+    "tipo_bien": "Casa",
+    "superficie_m2": 180.0,
+    "esta_ocupado": true,
+    "finanzas": {
+      "avaluo_pericial": 150000.00,
+      "valor_base": 100000.00,
+      "num_senalamiento": 1
+    },
+    "competencia": {
+      "estado": "Pendiente",
+      "num_postores": 0,
+      "puja_ganadora": null
+    },
+    "comparables": [
+      {
+        "fuente": "Plusvalia.com",
+        "precio_solicitado": 165000,
+        "m2_terreno": 175,
+        "observaciones": "Propiedad similar a 2 cuadras",
+        "distancia_metros": 450
+      }
+    ]
+  },
+  {
+    "id_proceso": "09902-2022-01122",
+    "fecha_remate": "2026-06-12",
+    "provincia": "Guayas",
+    "canton": "Guayaquil",
+    "sector": "Samborondón",
+    "tipo_bien": "Departamento",
+    "superficie_m2": 110.5,
+    "esta_ocupado": false,
+    "finanzas": {
+      "avaluo_pericial": 95000.00,
+      "valor_base": 63333.33,
+      "num_senalamiento": 2
+    }
+  }
+]
